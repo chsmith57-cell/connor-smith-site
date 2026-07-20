@@ -12,28 +12,30 @@
 // Deltas, not absolutes — the caller clamps against the field's limits.
 
 const RULES = [
-  { re: /wild|chaos|chaotic|turbulen|storm|violent|crazy|fren|swirl/, values: { turbulence: 0.5 } },
-  { re: /calm|gentle|smooth|serene|quiet|soft|peaceful|settle/,       values: { turbulence: -0.5, speed: -0.02 } },
-  { re: /fast|quick|speed|hurry|energetic|rush/,                      values: { speed: 0.05 } },
-  { re: /slow|lazy|languid|sluggish/,                                 values: { speed: -0.05 } },
-  { re: /gold|golden|champagne|warm/,                                 values: { gold: 0.25 } },
-  { re: /green|pthalo|cool|pigment/,                                  values: { gold: -0.25 } },
-  { re: /structur|orderly|rigid|grid|dissolve later|precise/,         values: { dissolve: 0.3 } },
-  { re: /flow|loose|melt|organic|free|dissolve (sooner|earlier|now)/, values: { dissolve: -0.3 } },
-  { re: /longer trails|silk|streak|paint|smear|linger/,               values: { decay: 0.02 } },
-  { re: /shorter trails|crisp|sharp|clean|clear/,                     values: { decay: -0.03 } },
-  { re: /dense|thick|more (dots|particles|points)|crowd/,             values: { density: 0.25 } },
-  { re: /sparse|thin|airy|fewer|breathe/,                             values: { density: -0.25 } },
+  { re: /wild|chaos|chaotic|turbulen|storm|violent|crazy|fren|swirl|curl|marble|churn/, values: { swirl: 7, push: 0.12 } },
+  { re: /calm|gentle|smooth|serene|quiet|peaceful|settle|still|rest/,       values: { swirl: -7, viscosity: 0.5 } },
+  { re: /fast|quick|speed|hurry|energetic|rush|vigorous|forceful/,          values: { push: 0.2 } },
+  { re: /slow|lazy|languid|sluggish|drift|dreamy/,                          values: { push: -0.15, viscosity: 0.3 } },
+  { re: /gold|golden|champagne|warm|amber|honey/,                          values: { gold: 0.22 } },
+  { re: /green|pthalo|cool|emerald|teal|jade/,                             values: { gold: -0.22 } },
+  { re: /thick|dense|voluptuous|lush|heavy|rich|more paint|bold/,           values: { body: 0.4 } },
+  { re: /thin|sparse|airy|wispy|light|delicate|faint/,                      values: { body: -0.4 } },
+  { re: /gloss|glossy|wet|shiny|shine|chrome|metallic|liquid metal|slick|polish/, values: { sheen: 0.4, bloom: 0.25 } },
+  { re: /matte|flat|dull|muted|dry/,                                        values: { sheen: -0.4, bloom: -0.2 } },
+  { re: /linger|silk|silky|smear|paint|longer|trail|persist|smooth/,        values: { linger: 0.5 } },
+  { re: /crisp|sharp|short|clean|clear|quick fade/,                         values: { linger: -0.5, viscosity: 0.2 } },
+  { re: /glow|bloom|radiant|luminous|halo/,                                 values: { bloom: 0.4 } },
+  { re: /thick swirl|viscous|syrup|molasses|gooey/,                         values: { viscosity: 0.5, swirl: 4 } },
 ];
 
-const RESET_RE = /reset|start over|default|begin again/;
+const RESET_RE = /reset|start over|default|begin again|clean slate/;
 const NEGATE_RE = /\b(less|fewer|reduce|lower|drop|not so|no more|without)\b/;
 const SOFTEN_RE = /\b(slight|slightly|a bit|a touch|a little|tad|barely)\b/;
-const AMPLIFY_RE = /\b(much|way|very|lot|far|really|extra|max)\b/;
+const AMPLIFY_RE = /\b(much|way|very|lot|far|really|extra|max|super)\b/;
 
 const GLYPH = {
-  turbulence: 'τ', speed: 'v', dissolve: 'L',
-  gold: 'gold', decay: 'decay', density: 'ρ',
+  swirl: 'swirl', push: 'push', viscosity: 'visc', linger: 'linger',
+  body: 'body', gold: 'gold', sheen: 'sheen', bloom: 'bloom',
 };
 
 export function interpretIntent(text, currentParams){
@@ -62,7 +64,7 @@ function interpret(text){
 
   const keys = Object.keys(values);
   if (!keys.length){
-    return { error: 'no match — try "wilder", "calmer", "more gold", "longer trails"' };
+    return { error: 'no match — try "wilder", "wetter", "more gold", "thicker paint"' };
   }
   const echo = keys
     .map((k) => `${GLYPH[k]} ${values[k] >= 0 ? '+' : '−'}${Math.abs(values[k]).toFixed(2)}`)

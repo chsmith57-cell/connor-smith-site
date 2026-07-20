@@ -20,10 +20,11 @@ python3 -m http.server 4173
 - `js/scroll.js` — waypoint-based scroll drift (hero near Logic → thesis ramps → studio dips back → fingerprint closes at Intuition)
 - `js/fingerprint.js` — beat 4: career data as tributaries merging into one flow (canvas 2D; chart-like at Logic, painterly at Intuition; "show the parameters" maps datum → behavior)
 - `js/reveal.js` — scroll reveals for [data-reveal] elements
-- `js/field.js` — the field engine: WebGL2 particle sim, grid → curl-noise flow dissolve, cursor-as-force, ping-ponged float state textures, decaying trail buffer, adaptive particle count, offscreen pause, reduced-motion static frames; used by both hero and studio
-- `js/flow.js` — hero glue: binds `t` to the engine's dissolve line + gold emergence; live readout
-- `js/intent.js` — Tier-1 intent interpreter (`interpretIntent(text) → ParameterPatch`, async LLM-shaped interface for the Tier-2 swap)
-- `js/studio.js` — code panel (real running params, editable in place), prompt + chips; code mutates first, flow follows
+- `js/field.js` — the particle engine (HERO only): WebGL2 particle sim, grid → curl-noise flow dissolve, cursor-as-force, ping-ponged float state textures, decaying trail buffer, adaptive particle count, offscreen pause, reduced-motion static frames
+- `js/flow.js` — hero glue: binds `t` to the particle engine's dissolve line + gold emergence; live readout
+- `js/fluid.js` — the liquid-paint engine (STUDIO): real-time GPU fluid sim (Jos Stam Stable Fluids / GPU Gems 38; splat+loop informed by PavelDoGreat's MIT WebGL-Fluid-Simulation). Advects pthalo/umber/gold dye through a Navier-Stokes velocity field; shades it as marbled pigment + liquid chrome (density-gradient normals, micro-relief, faux-environment sheen, bloom). Same interface as field.js so studio can drive either
+- `js/intent.js` — Tier-1 intent interpreter (`interpretIntent(text) → ParameterPatch`, async LLM-shaped interface for the Tier-2 swap); maps NL → fluid params (swirl/push/viscosity/linger/body/gold/sheen/bloom)
+- `js/studio.js` — code panel (real running fluid params, editable in place), prompt + chips; code mutates first, flow follows; drag to paint
 - `js/main.js` — wiring; dial overrides drift, scrolling on releases it
 - `styles/main.css` — palette tokens, variable-font interpolation, skeleton layout
 - `design/reference/` — reference images (see build plan §8; add when available)

@@ -3,39 +3,40 @@
 // mutates the code first (visible flash), then the flow responds. The values
 // are also directly editable in place.
 
-import { createField } from './field.js';
+import { createFluid } from './fluid.js';
 import { interpretIntent } from './intent.js';
 
 const DEFAULTS = {
-  turbulence: 1.6, speed: 0.12, dissolve: 0.55,
-  gold: 0.5, decay: 0.94, density: 1.0,
+  swirl: 22, push: 0.55, viscosity: 0.18, linger: 2.7,
+  body: 1.0, gold: 0.45, sheen: 0.85, bloom: 0.6,
 };
 
-const FMT = { turbulence: 2, speed: 2, dissolve: 2, gold: 2, decay: 3, density: 2 };
+const FMT = { swirl: 0, push: 2, viscosity: 2, linger: 2, body: 2, gold: 2, sheen: 2, bloom: 2 };
 
 const CODE_LINES = [
-  ['cmt', '// field.js — the function driving this canvas'],
+  ['cmt', '// fluid.js — the sim driving this canvas'],
   ['raw', ''],
   ['kw', 'const', 'raw', ' p = {'],
-  ['raw', '  turbulence: ', 'num:turbulence', '', 'raw', ',', 'cmt', '   // τ · noise scale'],
-  ['raw', '  speed:      ', 'num:speed', '', 'raw', ',', 'cmt', '   // advection rate'],
-  ['raw', '  dissolve:   ', 'num:dissolve', '', 'raw', ',', 'cmt', '   // grid → flow line'],
-  ['raw', '  gold:       ', 'num:gold', '', 'raw', ',', 'cmt', '   // emergent highlight'],
-  ['raw', '  decay:      ', 'num:decay', '', 'raw', ',', 'cmt', '  // trail persistence'],
-  ['raw', '  density:    ', 'num:density', '', 'raw', ',', 'cmt', '   // lattice ρ'],
+  ['raw', '  swirl:     ', 'num:swirl', '', 'raw', ',', 'cmt', '  // vorticity — how it curls'],
+  ['raw', '  push:      ', 'num:push', '', 'raw', ',', 'cmt', '  // force into the field'],
+  ['raw', '  viscosity: ', 'num:viscosity', '', 'raw', ',', 'cmt', '  // how fast it settles'],
+  ['raw', '  linger:    ', 'num:linger', '', 'raw', ',', 'cmt', '  // how long pigment stays'],
+  ['raw', '  body:      ', 'num:body', '', 'raw', ',', 'cmt', '  // paint thickness'],
+  ['raw', '  gold:      ', 'num:gold', '', 'raw', ',', 'cmt', '  // gold in the mix'],
+  ['raw', '  sheen:     ', 'num:sheen', '', 'raw', ',', 'cmt', '  // liquid-chrome specular'],
+  ['raw', '  bloom:     ', 'num:bloom', '', 'raw', ',', 'cmt', '  // wet glow'],
   ['raw', '};'],
   ['kw', 'const', 'raw', ' pigment = [', 'hex', "'#0F5646'", 'raw', ', ', 'hex', "'#8A4B2B'", 'raw', ', ', 'hex', "'#D9A441'", 'raw', '];'],
   ['raw', ''],
   ['kw', 'function', 'raw', ' step(dt) {'],
-  ['raw', '  ', 'kw', 'for', 'raw', ' (', 'kw', 'const', 'raw', ' pt ', 'kw', 'of', 'raw', ' field) {'],
-  ['raw', '    ', 'kw', 'const', 'raw', ' w   = dissolve(pt.home, p.dissolve);'],
-  ['raw', '    ', 'kw', 'const', 'raw', ' vel = curl(pt.pos * p.turbulence, time);'],
-  ['raw', '    pt.pos  += vel * p.speed * dt * w;'],
-  ['raw', '    pt.pos.lerp(pt.home, (1 - w) * 0.25);'],
-  ['raw', '  }'],
-  ['raw', '  trails.fade(p.decay);'],
+  ['raw', '  curl();', 'cmt', '                   // measure vorticity'],
+  ['raw', '  confine(p.swirl, dt);', 'cmt', '      // swirls tighten'],
+  ['raw', '  project();', 'cmt', '                 // make it incompressible'],
+  ['raw', '  advect(velocity, p.viscosity);'],
+  ['raw', '  advect(pigment, p.linger);', 'cmt', '  // pigment rides the flow'],
+  ['raw', '  shade(p.sheen, p.bloom);', 'cmt', '     // density → wet chrome'],
   ['raw', '}'],
-  ['cmt', '// data becomes motion'],
+  ['cmt', '// code becomes paint'],
 ];
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -72,10 +73,10 @@ export function initStudio(){
   const input = form.querySelector('input');
   const msg = section.querySelector('.studio-msg');
 
-  const field = createField(canvas, { params: { ...DEFAULTS } });
+  const field = createFluid(canvas, { params: { ...DEFAULTS } });
   if (!field){
     canvas.remove();
-    msg.textContent = 'webgl unavailable · field offline';
+    msg.textContent = 'webgl unavailable · flow offline';
     input.disabled = true;
     renderCode(codeEl, DEFAULTS);
     return;
