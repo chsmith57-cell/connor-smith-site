@@ -1,0 +1,490 @@
+/* ============================================================
+   Connor Smith — v1, Milestone 1
+   One state variable, t ∈ [0,1]. Everything below subscribes.
+   t = 0 → Logic (instrument). t = 1 → Intuition (pigment).
+   JS writes the interpolated custom properties on :root each frame.
+   ============================================================ */
+
+:root {
+  /* Pigment & Instrument tokens */
+  --ink:         #0A0F0D;
+  --pthalo:      #0F5646;
+  --pthalo-glow: #1FA37C;
+  --umber:       #8A4B2B;
+  --gold:        #D9A441;
+  --bone:        #F5F3EC;
+
+  /* Spectrum state — set by js/spectrum.js */
+  --t: 0.1;
+  --t-pct: 10%;      /* same value as a percentage, for color-mix() */
+  --mono: 0.9;       /* Recursive MONO axis  */
+  --casl: 0.1;       /* Recursive CASL axis  */
+  --slnt: 0;         /* Recursive slnt axis  */
+  --soft: 10;        /* Fraunces SOFT axis   */
+  --wonk: 0.1;       /* Fraunces WONK axis   */
+
+  /* Derived colors — the palette balance shifts with t */
+  --accent:      color-mix(in oklab, var(--gold) var(--t-pct), var(--pthalo-glow));
+  --accent-deep: color-mix(in oklab, var(--umber) var(--t-pct), var(--pthalo));
+  --bone-dim:    color-mix(in oklab, var(--bone) 55%, transparent);
+  --hairline:    color-mix(in oklab, var(--accent) 35%, transparent);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--bone);
+  font-family: 'Recursive', monospace;
+  font-weight: 400;
+  font-variation-settings: "MONO" var(--mono), "CASL" var(--casl), "slnt" var(--slnt);
+  line-height: 1.5;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+::selection { background: var(--accent-deep); color: var(--bone); }
+
+a {
+  color: var(--bone);
+  text-decoration: none;
+  border-bottom: 1px solid var(--accent);
+  padding-bottom: 1px;
+}
+a:hover { color: var(--accent); }
+
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 4px;
+}
+
+/* ---- The centerpiece: GPU particle field behind the hero (js/flow.js) ---- */
+
+.hero-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh; /* JS refines to the hero's real height */
+  display: block;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Field parameters, instrument voice; fades as flow takes over */
+.hero-readout {
+  position: absolute;
+  right: 1.6rem;
+  top: calc(100vh - 6.5rem);
+  z-index: 1;
+  display: grid;
+  gap: 0.35rem;
+  text-align: right;
+  font-size: 0.68rem;
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+  letter-spacing: 0.12em;
+  color: var(--bone-dim);
+  font-variant-numeric: tabular-nums;
+  opacity: calc(1 - var(--t));
+  pointer-events: none;
+}
+
+/* ---- Instrument voice: small-caps annotation register ---- */
+
+.annotation {
+  font-size: 0.72rem;
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--bone-dim);
+}
+
+/* ---- HUD: live values from the running system ---- */
+
+.hud {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  display: grid;
+  gap: 0.15rem;
+  font-size: 0.68rem;
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+  letter-spacing: 0.08em;
+  color: var(--bone-dim);
+  z-index: 10;
+}
+.hud-row {
+  display: grid;
+  grid-template-columns: 3.5em auto;
+  gap: 1em;
+}
+.hud-row span:last-child {
+  text-align: right;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Beats ---- */
+
+main { position: relative; }
+
+.beat {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.75rem;
+  padding: 6rem clamp(1.5rem, 7vw, 7rem);
+  max-width: 72rem;
+}
+
+.beat-hero { gap: 1.1rem; }
+
+.name {
+  font-size: clamp(2.6rem, 9vw, 7rem);
+  font-weight: 620;
+  font-variation-settings: "MONO" var(--mono), "CASL" var(--casl), "slnt" var(--slnt);
+  letter-spacing: calc(0.02em - var(--t) * 0.04em);
+  line-height: 1.05;
+}
+
+.role {
+  font-size: clamp(0.9rem, 1.6vw, 1.05rem);
+  color: var(--bone-dim);
+}
+
+.scroll-cue { margin-top: 3rem; }
+
+/* ---- Pigment voice: Fraunces display, softening and wonking with t ---- */
+
+.display {
+  font-family: 'Fraunces', serif;
+  font-weight: 480;
+  font-variation-settings: "opsz" 144, "SOFT" var(--soft), "WONK" var(--wonk);
+  font-size: clamp(1.8rem, 4.5vw, 3.4rem);
+  line-height: 1.15;
+}
+
+.pairs { list-style: none; display: grid; gap: 4.5rem; }
+
+.pair { display: grid; gap: 1rem; }
+.pair:nth-child(2) { margin-left: clamp(0rem, 6vw, 5rem); }
+.pair:nth-child(3) { margin-left: clamp(0rem, 12vw, 10rem); }
+
+.pair-words {
+  display: flex;
+  align-items: baseline;
+  gap: 1.4rem;
+  flex-wrap: wrap;
+}
+
+/* Left word speaks instrument; right word speaks pigment. */
+.pair-a {
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+  letter-spacing: 0.04em;
+}
+.pair-b { font-style: normal; }
+
+.pair-sep { color: var(--accent); font-size: 0.9rem; }
+
+.pair-proofs {
+  display: grid;
+  grid-template-columns: minmax(0, 26rem) minmax(0, 26rem);
+  gap: 1rem 3rem;
+}
+.proof {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--bone-dim);
+}
+.proof-a { font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0; }
+.proof-b {
+  font-family: 'Fraunces', serif;
+  font-variation-settings: "opsz" 30, "SOFT" var(--soft), "WONK" var(--wonk);
+  font-size: 0.95rem;
+}
+
+/* ---- Scroll reveals ---- */
+
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+[data-reveal] .pair-proofs { transition: inherit; transition-delay: 0.18s; opacity: 0; }
+[data-reveal].in { opacity: 1; transform: none; }
+[data-reveal].in .pair-proofs { opacity: 1; }
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal], [data-reveal] .pair-proofs { opacity: 1; transform: none; transition: none; }
+}
+
+/* ---- The Studio: code → flow ---- */
+
+.beat-studio { max-width: 88rem; }
+
+.studio {
+  display: grid;
+  grid-template-columns: minmax(0, 30rem) 1fr;
+  grid-template-areas:
+    "code canvas"
+    "prompt canvas";
+  grid-template-rows: auto 1fr;
+  gap: 1.5rem 2.5rem;
+  align-items: start;
+}
+
+.studio-code {
+  grid-area: code;
+  margin: 0;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  overflow-x: auto;
+  font-size: 0.8rem;
+  line-height: 1.75;
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+}
+.studio-code code { font: inherit; }
+
+.tok-cmt { color: color-mix(in oklab, var(--bone) 45%, transparent); }
+.tok-kw  { color: var(--pthalo-glow); }
+.tok-str { color: var(--bone-dim); }
+.tok-num {
+  color: var(--gold);
+  padding: 0 2px;
+  border-radius: 2px;
+  cursor: text;
+}
+.tok-num:focus {
+  outline: 1px solid var(--accent);
+  outline-offset: 1px;
+  color: var(--bone);
+}
+.tok-num.flash { animation: value-flash 0.9s ease-out; }
+@keyframes value-flash {
+  0%   { background: color-mix(in oklab, var(--accent) 40%, transparent); color: var(--bone); }
+  100% { background: transparent; }
+}
+.swatch {
+  display: inline-block;
+  width: 0.55em;
+  height: 0.55em;
+  border-radius: 50%;
+  margin-right: 0.4em;
+}
+
+.studio-canvas {
+  grid-area: canvas;
+  width: 100%;
+  height: min(72vh, 42rem);
+  display: block;
+}
+
+.studio-io { grid-area: prompt; }
+
+.studio-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+}
+.studio-prompt:focus-within { border-color: var(--accent); }
+.prompt-mark { color: var(--accent); font-size: 0.85rem; }
+.studio-prompt input {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--bone);
+  font: inherit;
+  font-size: 0.85rem;
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+  caret-color: var(--accent);
+}
+.studio-prompt input::placeholder { color: var(--bone-dim); opacity: 0.75; }
+.studio-prompt button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--bone-dim);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.studio-prompt button:hover { color: var(--accent); }
+
+.studio-msg {
+  margin-top: 0.7rem;
+  min-height: 1.2em;
+  text-transform: none;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+.studio-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+.chip {
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  color: var(--bone-dim);
+  font-family: inherit;
+  font-size: 0.68rem;
+  font-variation-settings: "MONO" 1, "CASL" 0, "slnt" 0;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.chip:hover { color: var(--accent); border-color: var(--accent); }
+
+/* ---- The fingerprint: career data as tributaries ---- */
+
+.beat-fingerprint { padding-bottom: 10rem; max-width: 82rem; }
+
+.fingerprint { display: grid; gap: 0.9rem; }
+
+.fingerprint-canvas {
+  width: 100%;
+  height: min(54vh, 32rem);
+  display: block;
+}
+
+.fp-toggle {
+  justify-self: start;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--bone-dim);
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 2px;
+}
+.fp-toggle:hover { color: var(--accent); border-color: var(--accent); }
+
+.fp-params {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0;
+}
+.fp-params[hidden] { display: none; }
+.fp-params div {
+  display: grid;
+  grid-template-columns: 11rem auto;
+  gap: 1.5rem;
+}
+.fp-params dt { color: var(--bone-dim); }
+.fp-params dd { margin: 0; color: var(--accent); text-transform: none; }
+
+.contact {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 0.95rem;
+  margin-top: 3rem;
+}
+
+/* ---- The dial ---- */
+
+.dial-wrap {
+  position: fixed;
+  bottom: 1.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 20;
+  padding: 0.6rem 1rem;
+  background: color-mix(in oklab, var(--ink) 82%, transparent);
+  backdrop-filter: blur(6px);
+  border-radius: 2px;
+  transition: opacity 0.3s ease;
+}
+
+/* The dial steps aside while the visitor is working in the studio. */
+body.studio-active .dial-wrap {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dial-end { white-space: nowrap; }
+
+.dial {
+  width: clamp(140px, 26vw, 240px);
+  padding: 0.7rem 0 0.2rem;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.dial-track {
+  position: relative;
+  height: 1px;
+  background: linear-gradient(90deg,
+    color-mix(in oklab, var(--pthalo-glow) 60%, transparent),
+    color-mix(in oklab, var(--gold) 60%, transparent));
+}
+
+.dial-thumb {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--t) * 100%);
+  transform: translate(-50%, -50%);
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--ink);
+  border: 1.5px solid var(--accent);
+}
+
+.dial-readout {
+  margin-top: 0.55rem;
+  text-align: center;
+  letter-spacing: 0.12em;
+  text-transform: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Small screens ---- */
+
+@media (max-width: 900px) {
+  .studio {
+    grid-template-columns: 1fr;
+    grid-template-areas: "code" "canvas" "prompt";
+    grid-template-rows: none;
+  }
+  .studio-canvas { height: 46vh; }
+}
+
+@media (max-width: 640px) {
+  .hud { display: none; }
+  .hero-readout { display: none; }
+  .pair-proofs { grid-template-columns: 1fr; }
+  .fp-params div { grid-template-columns: 1fr; gap: 0.1rem; }
+  /* 16px floor stops iOS zoom-on-focus */
+  .studio-prompt input { font-size: 1rem; }
+  .studio-code { font-size: 0.72rem; padding: 1rem 1.1rem; }
+  .dial-wrap { width: calc(100vw - 2rem); justify-content: center; }
+  .beat { min-height: 92vh; }
+}
+
+/* Reduced motion: no drift or smoothing (handled in JS);
+   the dial still recolors and retypes the page. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

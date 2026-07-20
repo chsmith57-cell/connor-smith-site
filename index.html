@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Connor Smith</title>
+  <meta name="description" content="Connor Smith — Strategy & Operations, Cloud AI, Google. San Francisco.">
+  <meta name="theme-color" content="#0A0F0D">
+  <meta property="og:title" content="Connor Smith">
+  <meta property="og:description" content="Strategy & Operations, Cloud AI, Google. San Francisco.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230A0F0D'/%3E%3Ccircle cx='23' cy='32' r='5' fill='%231FA37C'/%3E%3Ccircle cx='41' cy='32' r='5' fill='%23D9A441'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Recursive:slnt,wght,CASL,MONO@-15..0,300..1000,0..1,0..1&family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,100..900,0..100,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+  <!-- Live-value readout, instrument voice. Values are real, from the running store. -->
+  <aside class="hud" aria-hidden="true">
+    <div class="hud-row"><span>t</span><span id="hud-t">0.10</span></div>
+    <div class="hud-row"><span>MONO</span><span id="hud-mono">0.90</span></div>
+    <div class="hud-row"><span>CASL</span><span id="hud-casl">0.10</span></div>
+    <div class="hud-row"><span>SOFT</span><span id="hud-soft">10</span></div>
+  </aside>
+
+  <main>
+
+    <canvas class="hero-canvas" aria-hidden="true"></canvas>
+    <div class="hero-readout" aria-hidden="true">
+      <span id="fr-line1">N — · — fps</span>
+      <span id="fr-line2">τ — · v — · L —</span>
+    </div>
+
+    <section class="beat beat-hero">
+      <p class="annotation">01 · 37.7749°N&ensp;122.4194°W</p>
+      <h1 class="name">Connor Smith</h1>
+      <p class="role">Strategy &amp; Operations · Cloud AI · Google</p>
+      <p class="annotation scroll-cue">scroll ↓</p>
+    </section>
+
+    <section class="beat beat-thesis">
+      <p class="annotation">02 · thesis</p>
+      <ul class="pairs">
+        <li class="pair" data-reveal>
+          <div class="pair-words">
+            <span class="pair-a">Strategy</span>
+            <span class="pair-sep annotation">↔</span>
+            <span class="pair-b display">Execution</span>
+          </div>
+          <div class="pair-proofs">
+            <p class="proof proof-a">Board-level pricing and investment decisions, made on my analysis.</p>
+            <p class="proof proof-b">The initiative-level business-case system behind them — built it myself.</p>
+          </div>
+        </li>
+        <li class="pair" data-reveal>
+          <div class="pair-words">
+            <span class="pair-a">Data</span>
+            <span class="pair-sep annotation">↔</span>
+            <span class="pair-b display">People</span>
+          </div>
+          <div class="pair-proofs">
+            <p class="proof proof-a">Python + Databricks validation of AI recommendations — 8,000 locations, 5 categories.</p>
+            <p class="proof proof-b">Found why users didn't trust the tool; shipped the friction back as product changes.</p>
+          </div>
+        </li>
+        <li class="pair" data-reveal>
+          <div class="pair-words">
+            <span class="pair-a">Built</span>
+            <span class="pair-sep annotation">↔</span>
+            <span class="pair-b display">Deployed</span>
+          </div>
+          <div class="pair-proofs">
+            <p class="proof proof-a">Agentic AI, built and rolled out across BCG's consulting model.</p>
+            <p class="proof proof-b">Now shaping AI strategy at Google Cloud.</p>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="beat beat-studio">
+      <p class="annotation">03 · studio</p>
+      <div class="studio">
+        <pre class="studio-code" aria-label="The code driving the canvas"><code></code></pre>
+        <canvas class="studio-canvas" aria-hidden="true"></canvas>
+        <div class="studio-io">
+          <form class="studio-prompt">
+            <span class="prompt-mark" aria-hidden="true">&gt;</span>
+            <input type="text" autocomplete="off"
+                   placeholder="describe what you want the flow to do…"
+                   aria-label="Describe what you want the flow to do">
+            <button type="submit">enter</button>
+          </form>
+          <p class="studio-msg annotation" aria-live="polite"></p>
+          <div class="studio-chips">
+            <button type="button" class="chip">wilder</button>
+            <button type="button" class="chip">calmer</button>
+            <button type="button" class="chip">more gold</button>
+            <button type="button" class="chip">longer trails</button>
+            <button type="button" class="chip">denser</button>
+            <button type="button" class="chip">reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="beat beat-fingerprint">
+      <p class="annotation">04 · fingerprint</p>
+      <div class="fingerprint" data-reveal>
+        <canvas class="fingerprint-canvas"
+                aria-label="Career timeline, 2018 to now, rendered as tributaries merging into one flow"></canvas>
+        <button type="button" class="fp-toggle annotation" aria-expanded="false">show the parameters</button>
+        <dl class="fp-params annotation" hidden>
+          <div><dt>span · width</dt><dd>tenure, 2018 → now</dd></div>
+          <div><dt>filaments</dt><dd>20+ workstreams · team of 6</dd></div>
+          <div><dt>confluence grain</dt><dd>~8,000 locations</dd></div>
+          <div><dt>gold at the merge</dt><dd>$100M+ target value</dd></div>
+          <div><dt>merge ticks</dt><dd>15+ diligences</dd></div>
+        </dl>
+      </div>
+      <p class="contact" data-reveal>
+        <a href="mailto:chsmith57@gmail.com">chsmith57@gmail.com</a>
+        <span class="annotation">·</span>
+        <!-- TODO: confirm LinkedIn URL with Connor -->
+        <a href="https://www.linkedin.com" rel="me">LinkedIn</a>
+      </p>
+    </section>
+
+  </main>
+
+  <div class="dial-wrap">
+    <span class="annotation dial-end">structure</span>
+    <div class="dial" id="dial" role="slider" tabindex="0"
+         aria-label="Position on the structure–flow spectrum"
+         aria-valuemin="0" aria-valuemax="1" aria-valuenow="0.1">
+      <div class="dial-track">
+        <div class="dial-thumb"></div>
+      </div>
+      <div class="dial-readout annotation" id="dial-readout">t = 0.10</div>
+    </div>
+    <span class="annotation dial-end">flow</span>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
