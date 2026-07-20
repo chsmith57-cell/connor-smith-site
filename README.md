@@ -18,7 +18,7 @@ python3 -m http.server 4173
 - `js/spectrum.js` — maps `t` → CSS custom properties + HUD readouts
 - `js/dial.js` — the dial (pointer + keyboard: arrows, PageUp/Down, Home/End)
 - `js/scroll.js` — waypoint-based scroll drift (hero near Logic → thesis ramps → studio dips back → fingerprint closes at Intuition)
-- `js/fingerprint.js` — beat 4: career data as tributaries merging into one flow (canvas 2D; chart-like at Logic, painterly at Intuition; "show the parameters" maps datum → behavior)
+- `js/fingerprint.js` — beat 4: career as accumulation over time — a river (streamgraph) fed by tributaries that join and SWELL from a 2018 trickle to a full 2026 body (accumulation = width). Canvas 2D; stacked-area instrument chart at Logic → painterly pigment river at Intuition; "show the parameters" maps datum → behavior
 - `js/reveal.js` — scroll reveals for [data-reveal] elements
 - `js/field.js` — the particle engine (HERO only): WebGL2 particle sim, grid → curl-noise flow dissolve, cursor-as-force, ping-ponged float state textures, decaying trail buffer, adaptive particle count, offscreen pause, reduced-motion static frames
 - `js/flow.js` — hero glue: binds `t` to the particle engine's dissolve line + gold emergence; live readout
