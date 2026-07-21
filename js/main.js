@@ -9,6 +9,7 @@ import { initScrollDrift } from './scroll.js';
 import { initFlow } from './flow.js';
 import { initStudio } from './studio.js';
 import { initFingerprint } from './fingerprint.js';
+import { initSculpture } from './sculpture.js';
 import { initReveal } from './reveal.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -37,6 +38,7 @@ initDial(tStore, setManual);
 initFlow(tStore);
 initStudio();
 initFingerprint(tStore);
+initSculpture();
 initReveal();
 
 // Dev hook: jump the spectrum instantly (headless/throttled environments).

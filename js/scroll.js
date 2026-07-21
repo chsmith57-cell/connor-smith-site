@@ -9,6 +9,7 @@ const WAYPOINTS = [
   ['.beat-hero',        0.5,  0.08],
   ['.beat-thesis',      0.15, 0.28],
   ['.beat-thesis',      0.85, 0.55],
+  ['.beat-sculpture',   0.5,  0.62],
   ['.beat-studio',      0.5,  0.30],
   ['.beat-fingerprint', 0.3,  0.72],
   ['.beat-fingerprint', 0.9,  0.95],

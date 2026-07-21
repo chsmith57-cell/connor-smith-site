@@ -352,6 +352,20 @@ main { position: relative; }
 }
 .chip:hover { color: var(--accent); border-color: var(--accent); }
 
+/* ---- The sculpture: structure becoming flow (beat 03) ---- */
+
+.beat-sculpture { align-items: center; max-width: 90rem; }
+.sculpture { margin: 0; width: 100%; display: flex; justify-content: center; }
+.sculpture-video {
+  width: 100%;
+  max-width: 62rem;
+  height: auto;
+  display: block;
+  /* Feather the museum-gray plate into the page ground so it isn't a hard rectangle */
+  -webkit-mask-image: radial-gradient(118% 102% at 50% 47%, #000 42%, transparent 90%);
+  mask-image: radial-gradient(118% 102% at 50% 47%, #000 42%, transparent 90%);
+}
+
 /* ---- The fingerprint: career data as tributaries ---- */
 
 .beat-fingerprint { padding-bottom: 10rem; max-width: 82rem; }
